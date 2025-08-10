@@ -42,3 +42,6 @@
 
 # Exclude environment files
 .env
+
+# Exclude Debug Logs
+discord.log
