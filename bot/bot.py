@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 import os
 import logging
@@ -9,11 +10,16 @@ import asyncio
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
+# Intents 
 intents = discord.Intents.default()
+intents.members = True 
 intents.message_content = True
+intents.presences = True
 
-bot = commands.Bot(command_prefix="$", intents=intents)
+# Bot instance
+bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Logging
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 logging.getLogger('discord.http').setLevel(logging.INFO)
@@ -29,17 +35,33 @@ formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}\n'
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# Events
 @bot.event
 async def on_ready():
     logger.info(f'We have logged in as {bot.user}')
-    print(discord.__version__)
+    print(f'Discord.py version: {discord.__version__}')
+    print(f'Bot ID: {bot.user.id}')
+    print(f'Bot Username: {bot.user.name}')
+    try:
+        synced = await bot.tree.sync()
+        print(f'Synced {len(synced)} command(s)')
+    except Exception as e:
+        logger.error(f'Failed to sync commands: {e}', exc_info=True)
 
+# Load Cogs
 async def main():
     try:
-        await bot.load_extension('cogs.hello_cog')
+        await bot.load_extension('cogs.setup_cog')
     except Exception as e:
-        logger.error(f"Failed to load extension 'bot.cogs.hello_cog': {e}", exc_info=True)
+        logger.error(f"Failed to load extension 'cogs.setup_cog': {e}", exc_info=True)
+        print(f"Failed to load extension 'cogs.setup_cog': {e}")  
+    try:
+        await bot.load_extension('cogs.hello_cog')        
+    except Exception as e:
+        logger.error(f"Failed to load extension 'cogs.hello_cog': {e}", exc_info=True)
+        print(f"Failed to load extension 'cogs.hello_cog': {e}")
     await bot.start(TOKEN)
 
+# Run the bot
 if __name__ == "__main__":
     asyncio.run(main())

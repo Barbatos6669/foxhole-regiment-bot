@@ -1,4 +1,5 @@
 from discord.ext import commands
+# Slash commands
 
 class HelloCog(commands.Cog):
     def __init__(self, bot):
@@ -6,11 +7,8 @@ class HelloCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f'We have logged in as {self.bot.user}')
+        print(f"Loaded {self.__class__.__name__} successfully.")
 
-    @commands.command()
-    async def hello(self, ctx):
-        await ctx.send('Hello!')
 
 async def setup(bot):
     await bot.add_cog(HelloCog(bot))
