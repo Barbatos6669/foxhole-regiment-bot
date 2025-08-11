@@ -45,3 +45,6 @@
 
 # Exclude Debug Logs
 discord.log
+
+# Exclude channel configuration
+configs/default_channels.json
